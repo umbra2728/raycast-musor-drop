@@ -1,0 +1,55 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "musor-drop",
+  "title": "Musor Drop",
+  "description": "Pop-up ads from MUSOR DROP: one loud full-width ad, or a swarm of tiny ones taking over your screen.",
+  "icon": "icon.png",
+  "author": "ismailgaleev",
+  "platforms": [
+    "macOS"
+  ],
+  "categories": [
+    "Fun"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "musor-drop",
+      "title": "Musor Drop",
+      "subtitle": "Musor Drop",
+      "description": "Show one MUSOR DROP ad full-width on top of everything",
+      "mode": "no-view"
+    },
+    {
+      "name": "musor-swarm",
+      "title": "Musor Swarm",
+      "subtitle": "Musor Drop",
+      "description": "Flood the screen with small MUSOR DROP ads popping up one after another",
+      "mode": "no-view",
+      "preferences": [
+        {
+          "name": "count",
+          "type": "textfield",
+          "required": false,
+          "default": "20",
+          "title": "Number of Ads",
+          "description": "How many ads to spawn (1–60)",
+          "placeholder": "20"
+        }
+      ]
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.100.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.13.10",
+    "typescript": "^5.8.3"
+  },
+  "scripts": {
+    "build:player": "swiftc -O -swift-version 5 player/main.swift -o assets/musor-drop-player",
+    "build": "npm run build:player && ray build -e dist",
+    "dev": "npm run build:player && ray develop",
+    "typecheck": "tsc --noEmit"
+  }
+}
