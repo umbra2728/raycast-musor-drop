@@ -1,6 +1,10 @@
 import { getPreferenceValues } from "@raycast/api";
 import { launchPlayer } from "./lib/player";
 
+interface SwarmPreferences {
+  count?: string;
+}
+
 const DEFAULT_COUNT = 20;
 const MAX_COUNT = 60;
 
@@ -11,6 +15,6 @@ function parseCount(value: string | undefined) {
 }
 
 export default async function Command() {
-  const { count } = getPreferenceValues<Preferences.MusorSwarm>();
+  const { count } = getPreferenceValues<SwarmPreferences>();
   await launchPlayer(["--swarm", String(parseCount(count))]);
 }
