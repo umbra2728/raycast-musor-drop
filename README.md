@@ -29,7 +29,7 @@ Ads float above every window and every Space, ignore the mouse, and close themse
 ## Install
 
 ```bash
-git clone https://github.com/ismailgaleev/raycast-musor-drop.git
+git clone https://github.com/umbra2728/raycast-musor-drop.git
 cd raycast-musor-drop
 npm install
 npm run dev
