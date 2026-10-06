@@ -96,7 +96,9 @@ final class AdWindow {
 @MainActor
 final class AdPlayer: NSObject, NSApplicationDelegate {
     private static let swarmSpawnInterval = 0.12...0.35
-    private static let swarmWidthFraction = 0.16...0.3
+    private static let swarmWidthFraction = 0.24...0.4
+    private static let swarmPlacementCandidates = 16
+    private static let swarmPlacementMemory = 5
 
     private let asset: AVURLAsset
     private let mode: Mode
@@ -140,8 +142,11 @@ final class AdPlayer: NSObject, NSApplicationDelegate {
     private func presentSwarm(count: Int, info: VideoInfo, screen: NSScreen) {
         let bounds = screen.visibleFrame
         var delay = 0.0
+        var recentCenters: [CGPoint] = []
         for index in 0..<count {
-            let frame = Self.randomFrame(in: bounds, aspect: info.size)
+            let frame = Self.spreadFrame(in: bounds, aspect: info.size, avoiding: recentCenters)
+            recentCenters.append(CGPoint(x: frame.midX, y: frame.midY))
+            if recentCenters.count > Self.swarmPlacementMemory { recentCenters.removeFirst() }
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
                 guard let self else { return }
                 self.spawn(frame: frame, isPopup: true)
@@ -150,6 +155,20 @@ final class AdPlayer: NSObject, NSApplicationDelegate {
             delay += Double.random(in: Self.swarmSpawnInterval)
         }
         scheduleFailsafe(after: delay + info.duration + 3)
+    }
+
+    private static func spreadFrame(in bounds: NSRect, aspect: CGSize, avoiding centers: [CGPoint]) -> NSRect {
+        let candidates = (0..<swarmPlacementCandidates).map { _ in randomFrame(in: bounds, aspect: aspect) }
+        let scored = candidates.map { (frame: $0, score: spreadScore($0, from: centers, in: bounds)) }
+        return scored.max { $0.score < $1.score }?.frame ?? candidates[0]
+    }
+
+    private static func spreadScore(_ frame: NSRect, from centers: [CGPoint], in bounds: NSRect) -> Double {
+        centers.map { center in
+            let deltaX = (frame.midX - center.x) / bounds.width
+            let deltaY = (frame.midY - center.y) / bounds.height
+            return (deltaX * deltaX + deltaY * deltaY).squareRoot()
+        }.min() ?? 0
     }
 
     private static func randomFrame(in bounds: NSRect, aspect: CGSize) -> NSRect {
