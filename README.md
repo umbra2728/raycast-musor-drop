@@ -59,4 +59,4 @@ It opens borderless windows at screen-saver level on the screen under the mouse 
 
 ## License
 
-[MIT](LICENSE)
+[HUIT License](LICENSE)
